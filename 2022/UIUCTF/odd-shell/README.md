@@ -11,6 +11,8 @@ Category: pwn, shellcode
 [Challenge Executable File](https://2022.uiuc.tf/files/9a315dc699ddcf1b959e5aa70fcd1f7f/chal?token=eyJ1c2VyX2lkIjoxNTgsInRlYW1faWQiOjgwLCJmaWxlX2lkIjo2NDV9.Yuebnw.PiGm7H8yoGfb6YrLgP9zZ6yXKN4)
 
 # TL;DR
+[ **This writeup won the UIUCTF 2022 writeup prize money :)** ]
+
 The challenge restricts use of any opcodes that is even. Had to use a good number of arithmetic operations to circumvent that which I've detailed in the below write-up. Used `execve("/bin/sh", NULL, NULL)` to get the shell. The tricky part was to figure out how to craft the assembly without even a single odd byte opcode. 
 
 [Shellcode Assembly](./shellcode-assembly.md). 
