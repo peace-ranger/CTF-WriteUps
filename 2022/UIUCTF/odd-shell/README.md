@@ -1,3 +1,5 @@
+# UIUCTF 2022 - ODD SHELL Writeup
+
 # Challenge Description
 ```
 O ho! You found me! I have a display of oddities available to you!
