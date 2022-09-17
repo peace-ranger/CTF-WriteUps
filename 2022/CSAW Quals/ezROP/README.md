@@ -102,9 +102,10 @@ From the code, we can observe that the vulnerability is in the `vuln()` function
 
 Next, we find the offset of return pointer using `gef`'s pattern search mechanism.
 
-![[Pasted image 20220917035124.png]]
-![[Pasted image 20220917035315.png]]
-![[Pasted image 20220917035453.png]]
+![gef-pattern-create](images/gef-pattern-create.png)
+![sigsegv](images/sigsegv.png)
+![gef-pattern-search](images/gef-pattern-search.png)
+
 So the return pointer is just after offset 120 i.e. we need to feed 120 bytes of junk data before our actual payload. One thing we need be careful about here is that our payload will have addresses to different locations within libc which are not alphabets. In lines 24-26 (the `else` block), the code will exit if the input contains any non-alphabet character other than spaces. But we don't want the program to exit. So what do we do? We make use of the `if` condition (lines 16-18) by adding a newline after the junk input so that the `check()` function returns to the callee function.
 
 Also while interacting with the challenge binary, care should be taken to properly read the responses before sending the payloads. Finally, we build the ROP chain, get libc leaks in first iteration and get the `execve()` call in second iteration which popped a shell.
@@ -117,7 +118,6 @@ Also while interacting with the challenge binary, care should be taken to proper
 from pwn import *
 
 context.arch = 'amd64'
-
   
 libc = ELF("/lib/x86_64-linux-gnu/libc.so.6")
 e = ELF("./ezROP")
