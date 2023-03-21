@@ -10,6 +10,8 @@ Category: rev
 ```
 [Challenge File - quine.c](https://ctf.b01lers.com/download?file_key=80f3300d2cc95f143b6eca63ca4f0757626a85c7f8005b3dd36616c07d69d76f&team_key=66b5d951acac088cb2b9105a6db0d6f41907adc4b07b1177b90c0fc94cd33f0e)
 
+[solve.py](./solve.py)
+
 # Solution
 Was given a source code of obfuscated [quine](https://en.wikipedia.org/wiki/Quine_(computing)) program in c. 
 ```C
