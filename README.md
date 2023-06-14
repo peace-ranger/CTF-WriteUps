@@ -14,3 +14,4 @@ I started doing CTFs in solo from 2017 and fell in love with it :) In 2018, I jo
 - 2023
   - [b01lers CTF 2023](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2023/b01lers%20CTF)
   - [angstrom CTF 2023](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2023/angstrom%20CTF)
+  - [BxMCTF 2023](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2023/BxMCTF)
