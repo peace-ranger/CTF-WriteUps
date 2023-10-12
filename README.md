@@ -8,7 +8,7 @@ I started doing CTFs in solo from 2017 and fell in love with it :) In 2018, I jo
 
 # CTFs
 - 2022
-  - [UIUCTF 2022](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2022/UIUCTF)
+  - [UIUCTF 2022](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2022/UIUCTF) (**winner of one of the writeup prizes**)
   - [CSAW CTF Qualification Round 2022](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2022/CSAW%20Quals)
   - [flaghunt 2022](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2022/flaghunt)
 - 2023
