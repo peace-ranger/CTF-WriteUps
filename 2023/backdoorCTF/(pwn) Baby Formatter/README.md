@@ -60,6 +60,7 @@ If we select the second option, `2. Try the challenge`, we are asked to give som
 ![binary_option_2.png](images/binary_option_2.png)
 
 As our input is echoed back as is, its a hint that there might be format string vulnerability present in the binary. I will not dive into the details of how format string vulns work. So if you need refresher or have no idea how format string attack works, consider watching these excellent videos by Liveoverflow from its [Binary Exploitation](https://www.youtube.com/playlist?list=PLhixgUqwRTjxglIswKp9mpkfPNfHkzyeN) playlist [Vidoes 0x11-0x13]. Also this [tutorial](https://tc.gts3.org/cs6265/tut/tut05-fmtstr.html) on format string vuln is really helpful.
+
 Lets try with some `%p` to validate our suspicion.
 
 ![cant_leak_output.png](images/cant_leak_output.png)
@@ -89,7 +90,9 @@ A input of length `0x1d` is taken, passed to `filter()` function and then to `pr
 So `filter()` is basically checking whether the input contains `p`, `u`, `d` or `x`, which are the usual format specifiers to check and validate format string vulnerabilities. If any of them are present, the program terminates. That means our input can't have these characters. Fortunately for us, another two major format specifiers `s` and `n` are not filtered. And those two are enough to validate and perform arbitrary write using the format string vuln.
 ## Goal (and a failed attempt...)
 Our goal for this challenge is to get shell execution so that we can read the flag. Usually with format string vuln, we do this by overwriting the GOT entry of some libc function to another function that can execute shell. But that route of exploitation is not possible in this challenge as the GOT table is `read-only` for this binary.
+
 My initial thought was to use [one_gadget](https://github.com/david942j/one_gadget) `execeve` as I wouldn't have to set function parameters for that case. Because if I use `system("/bin/sh")` then I have to find a gadget to put the address of `"/bin/sh"` in `RDI` after writing the string on stack and build a whole rop chain on the stack which would make the exploit more complex. I wanted to take the easy route but in the end I ended up creating the rop chaing and calling `system()` anyway. 
+
 The reason I couldn't use one_gadget was that it needs some constraints to be satisfied for one_gadget to work. The following output from one_gadget tool shows the available options from given `libc.so`:
 
 ![one_gadget_output.png](images/one_gadget_output.png)
@@ -118,6 +121,7 @@ My plan is to overwrite a return address on stack with the address of a `pop rdi
 See [TL;DR](#tldr) to visualize how the stack will look like after these steps are done.
 #### Find addresses
 Recall that the `hint()` function gives us two addresses, one from stack (`stack_address`) and another from libc (`fgets`). First we need to find a suitable address on stack which doesn't get overwritten between function calls and put the string `"/bin/sh\x00"` there. I selected `stack_address + 176` as the memory location to write binsh.
+
 Finding address of `system()` is pretty straightforward as we have the runtime address of a libc function (`fgets` from `hint()`) and also the libc itself. We get the base address of libc by subtracting the leaked libc address from the offset of `fgets`. Then add the offset of `system` with libc base.
 ```python
 libc.addr = fgets - libc.symbols["fgets"]
@@ -132,6 +136,7 @@ Next we need to find out the address of `pop rdi; ret` and `ret` instruction. Un
 The final piece of the puzzle was to figure out which return address I would overwrite. I spent a lot of time trying to figure out this. In each iteration of the `while` loop in main, the `vuln()` function was called once. Each call to `vuln()` allowed me to input a string of length `0x1d` that means I couldn't use large values to overwrite multiple byte positions at once. This input length limitation gave me hard time as I had to overwrite only 1 byte at a time in each call to `vuln()`. That means I need to be able to come to vuln() a lot of times to overwrite all those values and as such overwriting return address of vuln() was not an option. So I decided to **overwrite the return address of `main()`** to `pop rdi; ret` instruction so that when I use the `3. Exit` option, the constructed ROP chain would be triggered.
 #### Overwrite the stack
 After getting all the required addresses, the last step was to overwrite the stack with those addresses starting from the return address of `main()`. I overwrote one byte at each call to `printf()` (inside vuln()) using the `fmtstr_payload()` function mentioned in the [previous section](#pwntools-fmtstr_payload). One thing that I want to mention here is that the stack had to be overwritten sequentially. That means, first overwrite the return address of `main()`, next write the address of string `/bin/sh\x00`, then the address of `ret` and finally the address of `system()`. Because somehow each write was affecting the immediate next write's position. For example, if I wrote first the address of `/bin/sh\x00` and then I changed `main()`'s return address, it would change the previously written address of `/bin/sh\x00` rendering my ROP chain useless. Thats why I had to write these addresses sequentially in the order they should be in ROP chain. Writing of string `"/bin/sh\x00"` can be done anywhere in the sequence as this memory is not adjacent to our ROP chain.
+
 Final stack layout after overwriting at the return point of main:
 
 ![final_stack_layout.png](images/final_stack_layout.png)
