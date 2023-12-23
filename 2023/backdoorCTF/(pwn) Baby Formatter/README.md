@@ -59,7 +59,7 @@ If we select the second option, `2. Try the challenge`, we are asked to give som
 
 ![binary_option_2.png](images/binary_option_2.png)
 
-As our input is echoed back as is, its a hint that there might be format string vulnerability present in the binary. I will not dive into the details of how format string vulns work. So if you need refresher or have no idea how format string attack works, consider watching these excellent videos by Liveoverflow from its [Binary Exploitation](https://www.youtube.com/playlist?list=PLhixgUqwRTjxglIswKp9mpkfPNfHkzyeN) playlist [Vidoes 0x11-0x13]. Also this [tutorial](https://tc.gts3.org/cs6265/tut/tut05-fmtstr.html) on format string vuln is really helpful.
+As our input is echoed back as is, its a hint that there might be format string vulnerability present in the binary. I will not dive into the details of how format string vulns work. So if you need refresher or have no idea how format string attack works, consider watching these excellent videos by Liveoverflow from its [Binary Exploitation](https://www.youtube.com/playlist?list=PLhixgUqwRTjxglIswKp9mpkfPNfHkzyeN) playlist (_vidoes 0x11-0x13_). Also this [tutorial](https://tc.gts3.org/cs6265/tut/tut05-fmtstr.html) on format string vuln is really helpful.
 
 Lets try with some `%p` to validate our suspicion.
 
