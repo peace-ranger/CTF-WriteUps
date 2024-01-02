@@ -1,1 +1,1 @@
-An intermediate level problem involving ARM shellcode execution.
+An introductory challenge involving ARM shellcode execution.
