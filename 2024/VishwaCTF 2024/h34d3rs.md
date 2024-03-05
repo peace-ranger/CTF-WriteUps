@@ -31,7 +31,7 @@ I searched online and found that the `Upgrade-Insecure-Requests` header is used 
 
 ![headers_step_5.png](images/headers_step_5.png)
 #### Step 5
-This last step took me the longest. Not because it was hard, but because the author made it unnecessarily cryptic. What on earth is this `Nine times (9)` mean?!! Turned out its `999999999`!!! After two hours of trying I found it out. Most of the participants were lost at it!  I mean why you make challenges difficult by making them cryptic! Should focus on making it technically difficult, not through the wordings! Anyways, enough ranting. Oh, btw, the header in this step is `Downlink` which can be easily found by searching for "approximate bandwidth of the clients connection to the server". We can see the flag after this step. Phew!
+This last step took me the longest. Not because it was hard, but because the author made it unnecessarily cryptic. What on earth is this `Nine times (9)` mean?!! Turned out its `999999999`!!! After two hours of trying, I found it out. Most of the participants were lost at it!  I mean why do you make challenges difficult with cryptic words! Should focus on making it technically difficult, not through the wordings! Anyways, enough ranting. Oh, btw, the header in this step is `Downlink` which can be easily found by searching for "approximate bandwidth of the clients connection to the server". We can see the flag after this step. Phew!
 
 ![headers_step_5 1.png](images/headers_step_6.png)
 ## Flag
