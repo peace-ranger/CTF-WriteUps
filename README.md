@@ -8,6 +8,8 @@ Note: I only include writeups of interesting challenges from among the ones I so
 
 I started doing CTFs in solo from 2017 and fell in love with it :) In 2018, I joined team [irNoobs](https://ctftime.org/team/70393) and continued till the end of 2021. In 2022, I built my own university team [IUT GENESIS](https://ctftime.org/team/175924) and has been one of the top teams of my country since then. Even though its almost 5 years into my CTF journey, it wasn't until late 2022 that I started doing writeups for my solved challenges. Thats why there's not many writeups as there should've been for someone who's CTFing for a few years :) Anyways, its a start I guess.
 
+**Update:** We became the No. 1 team of Bangladesh in 2023 on [ctftime ranking](https://ctftime.org/stats/2023/BD)
+
 # CTFs
 - 2022
   - [UIUCTF 2022](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2022/UIUCTF) (**winner** of one of the [writeup prizes](https://sigpwny.com/events/uiuctf/2022/#content))
