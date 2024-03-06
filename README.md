@@ -23,3 +23,5 @@ I started doing CTFs in solo from 2017 and fell in love with it :) In 2018, I jo
   - [flaghunt 2023](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2023/flaghunt2023)
   - [HKCERT CTF 2023](https://github.com/peace-ranger/CTF-WriteUps/blob/main/2023/hkcertCTF)
   - [BackdoorCTF 2023](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2023/backdoorCTF)
+- 2024
+  - [VishwaCTF 2024](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2024/VishwaCTF%202024)
