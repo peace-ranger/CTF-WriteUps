@@ -4,7 +4,7 @@ Author: shunt
 Category: pwn
 ```
 
-Challenge files: chall
+Challenge files: [chall](./chal)
 
 # TL;DR
 This was the first challenge of the `memo` pwn series. There were total 4 challenges and I drew first-blood in solving the series. The difficulty increased in each successive challenge.
