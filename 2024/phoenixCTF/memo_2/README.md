@@ -16,13 +16,13 @@ Final Exploit Script: [solve.py](#solvepy)
 ## Initial Analysis
 As we can see by running `checksec`, PIE is enabled this time, increasing the difficulty of the challenge.
 
-<img src='images/checksec.png' width='60%'>
+<img src='images/checksec.png' width='25%'>
 
 The program code is the same as the [memo_1](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2024/phoenixCTF/memo_1) so I wouldn't write that again here.
 ## Leak memory address
 It took me quite some time to figure out how I can leak any runtime address as I couldn't see at first glance any kind of format string vuln which is the usual route in challenges where PIE is enabled. After going through the decompiled code for some time, I finally could see it. It was in the `View` option where the added memo could be viewed.
 
-<img src='images/view_vuln.png' width='60%'>
+<img src='images/view_vuln.png' width='30%'>
 
 When `printf()` prints a string using the `%s` format specifier, how does it know where the string ends? Using the null terminator i.e. `\0`. So, using the buffer overflow vuln in `add` option, as we did in `memo_1`, we would overwrite the buffer `local_128` upto the byte right before the return address on stack. Then when we view the memo using option 3, `printf()` would print the buffer `local_128` until it finds a null terminator, giving us the return address after the overwritten buffer as a leak. Diagrammatically, the stack frame of `challenge()` function will look like following after we overwrite upto the return address:
 ```
@@ -40,13 +40,13 @@ We can see the leak in the following image:
 
 We need to take the last 8 bytes, strip the garbage bytes ('A' in our case) and convert the bytes to number. The return address is basically the address of the immediate next instruction in `main()` after the call to `challenge()`.
 
-<img src='images/disas_main.png' width='60%'>
+<img src='images/disas_main.png' width='50%'>
 
-<img src='images/ret_addr.png' width='60%'>
+<img src='images/ret_addr.png' width='50%'>
 
 The offset between any two instructions in a binary always remains same. So from the leaked address inside main, we can calculate its offset with the address of `backdoor()`.
 
-<img src='images/calc_offset.png' width='60%'>
+<img src='images/calc_offset.png' width='50%'>
 
 By subtracting `827` from the leaked address (`*main+28`), we can get the runtime address of `backdoor()`.
 ## Get shell
@@ -54,11 +54,11 @@ Leaking was the first and the primary hurdle of this challenge. Another hurdle w
 
 Now, to overwrite the return address, lets shift our attention to the last option yet to be explored i.e. the `edit` option. This option is very interesting as it gives us chance to do somewhat arbitrary write to a memory address, particularly on the stack. Lets see the code under the `edit` option.
 
-<img src='images/edit.png' width='60%'>
+<img src='images/edit.png' width='40%'>
 
 Note here that `local_130` is the length of the input buffer that we provided during the leak phase in add memo option. As seen from the above image, we can write `len(buf) - position` bytes starting from memory location `buf + lvar2`. Note that, here the calculation of `lvar2` in the decompiled view is wrong which I found out after looking at the assembly, shown in the following image:
 
-<img src='images/calc_lvar2.png' width='60%'>
+<img src='images/calc_lvar2.png' width='45%'>
 
 So, the operation is basically `lvar2 = local_138 * 264` i.e. whatever position we provide as input, the write would start at `buf + (position * 264)` address where `buf` is the starting address of the memo we added earlier.
 
@@ -76,7 +76,7 @@ Diagrammatically, after the overwrite through `edit` option, the stack will look
 +                              +
 --------------------------------
 ```
-<img src='images/get_shell.png' width='60%'>
+<img src='images/get_shell.png' width='55%'>
 
 ## solve.py
 ```python
