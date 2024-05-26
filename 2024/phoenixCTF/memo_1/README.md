@@ -1,3 +1,4 @@
+# PhoenixCTF 2024 - `memo_1` Writeup
 ```
 pts: 35
 Author: shunt
