@@ -26,6 +26,7 @@ chal: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked, i
 <img src='images/checksec.png' width='60%'>
 
 `checksec` is a utility that comes with [pwntools](https://github.com/Gallopsled/pwntools). [GEF](https://github.com/hugsy/gef) also has it. As we can see from the image, the binary has no PIE enabled which makes our job easier as all the function/instruction addresses will be constant i.e. the same in both my local machine and the remote server.
+
 Lets run the binary to observer its behavior.
 ```bash
 $ ./chal
@@ -66,6 +67,7 @@ $
 The binary presents us with 4 options, `add`, `edit`, `view` and `exit`. If we try to add, it asks for password. For edit and view, we must add a memo first. This behavior of binary will be same for all the challenges in the series. So we can reuse some part of our solution to the next challenges, especially the interaction with the remote binary. Now we'll open the binary in [Ghidra](https://ghidra-sre.org/), the ultimate swiss-knife for reversing, and view the decompiled code to exactly understand what the binary is doing.
 ## Looking at Ghidra
 We can see there are 5 functions of interest: `main()`, `challenge()`, `menu()`, `authenticate()` and `backdoor()`.
+
 The `main()` function calls `challenge()` which is where the main program logic lies.
 ```C
 int main(EVP_PKEY_CTX *param_1)
@@ -210,12 +212,13 @@ Its kinda obvious that we have to somehow call this `backdoor()` function to get
 ## Finding the vuln
 After seeing what's there inside the binary, first we have to find the password first. Actually its pretty easy to see what's the password inside Ghidra as the password is stored as a global variable inside the binary.
 
-<img src='images/password.png' width='65%'>
+<img src='images/password.png' width='35%'>
 
 The hex above translates to `goodluck` which is the password.
+
 Now that we know the password, its time to figure out the vulnerability. Actually, there were several vulnerabilities in this binary in each of the three options `add`, `view` and `edit`. I was looking for any kind of buffer overflow vuln in the binary. If there was, then it would be pretty easy to overwrite the return address with the address of `backdoor()` (since there's no PIE, we have the address readily available) and redirect execution to get shell. And I found one in the `add` option.
 
-<img src='images/vuln_in_add.png' width='65%'>
+<img src='images/vuln_in_add.png' width='35%'>
 
 As we can see, we can read arbitrary size buffer in the variable `local_128` which is allocated on the stack. Thus we can overflow the allocated space for the variable and overwrite the return address. Now our job would to find the offset i.e. the number of garbage bytes we need to send before overwriting the return address. Diagrammatically, the stack frame of the `challenge()` function would look like this:
 ```
@@ -240,11 +243,11 @@ aaaaaaaabaaaaaaacaaaaaaadaaaaaaaeaaaaaaafaaaaaaagaaaaaaahaaaaaaaiaaaaaaajaaaaaaa
 
 <img src='images/gdb_crash_2.png' width='65%'>
 
-<img src='images/gdb_crash_3.png' width='65%'>
+<img src='images/gdb_crash_3.png' width='35%'>
 
 So, RBP is at offset 288 and RIP is therefore at 288+8 = 296 bytes from our buffer. Now we know how many bytes of garbage bytes we need to send. Lets get the address of `backdoor()` and then we are ready to build our exploit.
 
-<img src='images/backdoor_address.png' width='65%'>
+<img src='images/backdoor_address.png' width='45%'>
 
 So, diagrammatically, our exploit will overflow the stack like following:
 ```
@@ -257,11 +260,12 @@ So, diagrammatically, our exploit will overflow the stack like following:
 --------------------------------
 ```
 So when we use the exit option, it will pop the return address on the stack, which is now the address of `backdoor()`, then set RIP to this address and backdoor() is executed. Voila! we get our shell.
+
 I automated the interaction with the remote binary using `pwntools`. Anyone wishing to solve pwn challenges must learn this which will make life a lot lot easier.
 ## Getting the flag
 Ran the exploit script, got the shell and cat the flag.
 
-<img src='images/backdoor_address.png' width='65%'>
+<img src='images/get_shell.png' width='65%'>
 
 ## solve.py
 ```python
