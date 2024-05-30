@@ -21,7 +21,7 @@ All protections including Canary and PIE have been enabled.
 
 No `backdoor()` function to let us execute shell directly, as we can see from Ghidra.
 
-<img src='images/no_backdoor.png' width='50%'>
+<img src='images/no_backdoor.png' width='20%'>
 
 ## Patch binary
 Before we move on to our exploitation, we need to patch the binary first so that they use the given remote `libc.so.6` as provided in the challenge files. This is a crucial step because, by default, a program uses the local libc of the underlying system where its running. But the local libc and remote libc might not match rendering our ret2libc attack unsuccessful because the instruction offsets vary in different libc versions. So we have to patch the binary to use the libc matching that of the remote server.
@@ -49,30 +49,30 @@ With the binary now patched, we can now proceed to our primary objective of expl
 ## Leak Canary
 As canary is enabled, I first leaked the canary. See details in [memo_3](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2024/phoenixCTF/memo_3), which is exactly the same as I did here. I had to do just one extra thing here. The byte after the canary was not NULL bytes like we had in [memo_3](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2024/phoenixCTF/memo_3). That byte was also getting printed by `printf()`. So from the response, I searched the index of the last `A`'s position (as `A` is my garbage byte here) and took 8 bytes from that position as the 8-bytes just after last `A` was the Canary.
 
-<img src='images/leak_canary.png' width='50%'>
+<img src='images/leak_canary.png' width='60%'>
 
 ## Leak libc runtime address and get shell
 Now the main part of this challenge. We have to leak a libc runtime address so that we can execute shell through libc functions (`system`, `execve` etc.). Also as we have been given the libc running in remote server, its a pretty good hint that we have to do a `ret2libc` attack here. Once we get the leak, its pretty standard in `pwntools` to get the addresses of juicy libc functions that we can use to get shell.
 
 We have the ability to leak anything from the stack. So if a value on the stack was an address pointing to libc, we could read that and get the leak. The enhanced version of gdb, [GEF](https://hugsy.github.io/gef/) came in pretty handy here. We can use the `scan` command of GEF to find any instances of libc addresses in the currently running function's stack.
 
-<img src='images/scan_stack_libc.png' width='50%'>
+<img src='images/scan_stack_libc.png' width='60%'>
 
 We found one address pointing to `__libc_start_main+243` and it is also pretty close to our controlled buffer i.e. the added memo. As we can see from the below image, the location of this address on the stack is `312` bytes after the start of our buffer on stack.
 
-<img src='images/libc_offset_stack.png' width='50%'>
+<img src='images/libc_offset_stack.png' width='60%'>
 
 This means we have to overwrite upto `312-264 = 48` bytes from the start of `edit` position. After that, using the previous technique to leak canary and return addresses, we view the memo to get the libc leak.
 
 Now what to do with this leak? We want to get a shell after all, right? We can go about either of two common ways to get a shell from a libc leak, call `system("/bin/sh")` or `execve("/bin/sh", 0, 0)`. The first approach is cumbersome as then we would have to find [ROP gadgets](https://ir0nstone.gitbook.io/notes/types/stack/return-oriented-programming/gadgets) to call `system()` function with appropriate arguments ("/bin/sh" in this case). The other one, `execve()`, is a lot easier. This is what's known as a one-gadget which leads to remote code execution if we can just jump at that particular address. Jumping to this address will lead to execution of `execve("/bin/sh", 0, 0)` provided a set of constraints (registers containing some fixed values) is met. So I first tried this approach with the [one-gadget finder tool](https://github.com/david942j/one_gadget) and fortunately I found one whose conditions are satisfied at `challenge()` function's return point as we will jump to the one-gadget location from that point.
 
-<img src='images/one_gadget_output.png' width='50%'>
+<img src='images/one_gadget_output.png' width='30%'>
 
-<img src='images/one_gadget_cond_sat.png' width='50%'>
+<img src='images/one_gadget_cond_sat.png' width='60%'>
 
 Now that we know which one-gadget location we would like to jump to when we return, we can just get the runtime address of that location by adding the offset found from the one-gadget finder tool to the leaked libc address. Next we overwrite the return address along with the leaked canary using the same technique mentioned in [memo_3](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2024/phoenixCTF/memo_3). And voila! we get the shell!
 
-<img src='images/get_shell.png' width='50%'>
+<img src='images/get_shell.png' width='60%'>
 
 ## solve.py
 ```python
