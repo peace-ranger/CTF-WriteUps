@@ -25,3 +25,4 @@ I started doing CTFs in solo from 2017 and fell in love with it :) In 2018, I jo
   - [BackdoorCTF 2023](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2023/backdoorCTF)
 - 2024
   - [VishwaCTF 2024](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2024/VishwaCTF%202024)
+  - [PhoenixCTF 2024](https://github.com/peace-ranger/CTF-WriteUps/tree/main/2024/phoenixCTF)
